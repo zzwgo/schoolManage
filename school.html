@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>school</title>
+    <link href="ext-3.3.0/resources/css/ext-all.css" rel="stylesheet" type="text/css" />
+    <script src="ext-3.3.0/adapter/ext/ext-base.js" type="text/javascript"></script>
+    <script src="ext-3.3.0/ext-all.js" type="text/javascript"></script>
+    <script>
+        Ext.onReady(function () {
+            Ext.QuickTips.init();
+
+            var currentHandleNode;
+
+            const addNode = (handleNode, nodeText) => {
+                if (!handleNode) {
+                    return;
+                }
+                if (handleNode.getDepth() === 2) {
+                    handleNode = handleNode.parentNode
+                }
+                if (handleNode.childNodes.length === 0) {
+                    handleNode.leaf = false;
+                    handleNode.expand();
+                    handleNode.appendChild(
+                        new Ext.tree.TreeNode({
+                            text: `${nodeText}`,
+                            leaf: true,
+                            expanded: true
+                        })
+                    );
+                } else {
+                    handleNode.appendChild(
+                        new Ext.tree.TreeNode({
+                            text: `${nodeText}`,
+                            leaf: true,
+                            expanded: true
+                        })
+                    );
+                }
+            };
+
+            const schoolForm = new Ext.form.FormPanel({
+                id: "schoolForm",
+                title: "添加",
+                frame: true,
+                border: false,
+                items: [{
+                    id: "info",
+                    xtype: "textfield",
+                    fieldLabel: "请填写相关信息",
+                    allowBlank: false
+                }],
+                buttons: [{
+                        text: "提交",
+                        handler: function () {
+                            if (schoolForm.getForm().isValid()) {
+                                if (currentHandleNode) {
+                                    addNode(currentHandleNode, schoolForm.findById("info")
+                                        .getValue());
+
+                                } else {
+                                    Ext.Msg.alert("警告", "请选择要添加的类别")
+                                }
+                            }
+                        }
+                    },
+                    {
+                        text: "重置",
+                        handler: function () {
+                            schoolForm.getForm().reset();
+                        }
+                    }
+                ]
+            });
+
+            const schoolMenu = new Ext.menu.Menu({
+                id: "Amenu",
+                items: [{
+                        id: "deleteNode",
+                        text: "删除"
+                    },
+                    {
+                        id: "addNode",
+                        text: "添加"
+                    }
+                ],
+                listeners: {
+                    itemclick: function (item) {
+                        currentHandleNode = item.parentMenu.contextNode;
+                        console.log(currentHandleNode);
+                        switch (item.id) {
+                            case "deleteNode":
+                                if (currentHandleNode.parentNode) {
+                                    currentHandleNode.remove();
+                                }
+                                break;
+                            case "addNode":
+                                addNode(currentHandleNode, "please change name");
+                                break;
+                        }
+                    }
+                }
+            });
+
+            const schoolTree = new Ext.tree.TreePanel({
+                id: "schoolTree",
+                border: false,
+                enableDD: true,
+                useArrows: true,
+                contextMenu: schoolMenu,
+                loader: new Ext.tree.TreeLoader({
+                    dataUrl: "schoolData.txt"
+                }),
+                root: new Ext.tree.AsyncTreeNode({
+                    text: "school",
+                    expanded: true
+                }),
+                listeners: {
+                    contextmenu: function (node, e) {
+                        node.select();
+                        var context = node.getOwnerTree().contextMenu;
+                        context.contextNode = node;
+                        context.showAt(e.getXY());
+                    },
+                    click: function (node, event) {
+                        currentHandleNode = node;
+                    }
+                }
+            });
+
+            const treeEditor = new Ext.tree.TreeEditor(
+                schoolTree, {
+                    allowBlank: false
+                }, {
+                    listeners: {
+                        complete: function (editor, curr, old) {
+                            Ext.Msg.alert("您好", "你把" + old + "修改为了" + curr);
+                        }
+                    }
+                }
+            );
+
+            const schoolTreeSorter=new Ext.tree.TreeSorter(schoolTree,{
+                caseSensitive:true,
+                dir:"asc",
+                folderSort:true
+            })
+
+            new Ext.Panel({
+                style:"margin:auto",
+                title: "教务系统",
+                width: 600,
+                border: false,
+                frame: true,
+                renderTo: "school",
+                items: [{
+                    xtype: "fieldset",
+                    items: [schoolTree]
+                }, schoolForm]
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div id="school"></div>
+</body>
+
+</html>

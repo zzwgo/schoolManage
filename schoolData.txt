@@ -1,0 +1,13 @@
+[
+    {id:"1",text:"一班",expanded:true,children:[
+        {text:"小明",leaf:true},
+        {text:"小红",leaf:true},
+        {text:"小绿",leaf:true},
+    ]},
+    {id:"2",text:"二班",expanded:true,children:[
+        {text:"小A",leaf:true},
+        {text:"小B",leaf:true},
+        {text:"小C",leaf:true},
+    ]},
+   
+]
