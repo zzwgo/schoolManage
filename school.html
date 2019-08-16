@@ -20,7 +20,7 @@
                     return;
                 }
                 if (handleNode.getDepth() === 2) {
-                    handleNode = handleNode.parentNode
+                    handleNode = handleNode.parentNode;
                 }
                 if (handleNode.childNodes.length === 0) {
                     handleNode.leaf = false;
@@ -63,7 +63,7 @@
                                         .getValue());
 
                                 } else {
-                                    Ext.Msg.alert("警告", "请选择要添加的类别")
+                                    Ext.Msg.alert("警告", "请选择要添加的类别");
                                 }
                             }
                         }
@@ -99,7 +99,13 @@
                                 }
                                 break;
                             case "addNode":
-                                addNode(currentHandleNode, "please change name");
+                                Ext.Msg.prompt('tips', '请输入信息', function (btn, text) {
+                                    if (btn === 'ok' && text) {
+                                        addNode(currentHandleNode, text);
+                                    } else {
+                                        Ext.Msg.alert("tips", "输入不能为空");
+                                    }
+                                });
                                 break;
                         }
                     }
@@ -116,7 +122,7 @@
                     dataUrl: "schoolData.txt"
                 }),
                 root: new Ext.tree.AsyncTreeNode({
-                    text: "school",
+                    text: "学校",
                     expanded: true
                 }),
                 listeners: {
@@ -144,14 +150,14 @@
                 }
             );
 
-            const schoolTreeSorter=new Ext.tree.TreeSorter(schoolTree,{
-                caseSensitive:true,
-                dir:"asc",
-                folderSort:true
+            const schoolTreeSorter = new Ext.tree.TreeSorter(schoolTree, {
+                caseSensitive: true,
+                dir: "asc",
+                folderSort: true
             })
 
             new Ext.Panel({
-                style:"margin:auto",
+                style: "margin:auto",
                 title: "教务系统",
                 width: 600,
                 border: false,
